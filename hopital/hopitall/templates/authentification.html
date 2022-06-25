@@ -54,11 +54,13 @@
 				<div class="form-wrapper align-items-center">
 					<div class="form sign-in">
 						
+							<form method="POST">
+								{%csrf_token %}
 						
-						<button>
-							Open Camera
-						</button>
-						
+							<button name="camera" onclick="login_cam()" type="submit">
+								Open Camera
+							</button>
+							</form>
 					</div>
 				</div>
 				<div class="form-wrapper">

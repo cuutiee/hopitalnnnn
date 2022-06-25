@@ -9,8 +9,15 @@ from .forms import CreateUserForm
 from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
 from .serializers import RegistrationSerializer
+from hopitall.detection import FaceRecognition
 from django.contrib.auth import authenticate, login
 
+faceRecognition = FaceRecognition()
+
+def login_cam():
+    print("test")
+    face_id = faceRecognition.recognizeFace()
+    print(face_id)
 
 def index(request):
     return render(request, 'index.html', {})
@@ -32,9 +39,12 @@ def login_sign(request):
             serializer = RegistrationSerializer(data=request.POST)
             if serializer.is_valid():
                 account = serializer.save(image=request.FILES['img'])
+                id=account.id
+                print(id)
+                addFace(id)
             else:
                 data = serializer.errors
-
+                print(data)
         elif 'signin' in request.POST:
                 username = request.POST['username']
                 password = request.POST['password']
@@ -49,7 +59,19 @@ def login_sign(request):
     return render(request, 'login_sign.html', {})
 
  
+def addFace(face_id):
+    face_id = face_id
+    print(face_id)
+    faceRecognition.faceDetect(face_id)
+    print("detection")
+    faceRecognition.trainFace()
+    print("train")
+    return redirect('/')
 
 def authentification(request):
+    if request.method == 'POST': 
+        login_cam()
+        return render(request, 'index.html', {})        
+
     return render(request, 'authentification.html', {})        
 
