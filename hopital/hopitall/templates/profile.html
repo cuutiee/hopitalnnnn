@@ -1,0 +1,14 @@
+{% load static %}
+<!DOCTYPE html>
+<p>{{user.username}}</p>
+<p>{{user.mail}}</p>
+<p>{{user.fullname}}</p>
+<img src="{% static '' %}{{user.img}}" alt="">
+{%if user.isdocter%}
+<p>Doctor</p>
+
+{%else%}
+<p>Not a Doctor</p>
+{% endif %}
+
+</html>

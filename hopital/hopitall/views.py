@@ -5,6 +5,11 @@ from urllib.request import Request
 from django.shortcuts import redirect, render
 from django.views.generic import ListView, DeleteView
 from django.contrib.auth.forms import UserCreationForm
+from hopital.settings import BASE_DIR
+
+from hopitall.models import NewUser
+
+
 from .forms import CreateUserForm
 from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
@@ -14,10 +19,26 @@ from django.contrib.auth import authenticate, login
 
 faceRecognition = FaceRecognition()
 
+csp = str(BASE_DIR)
+
+
+def profile(request,id):
+    print(type(id))
+    user=NewUser.objects.filter(id=id).first()
+    username=user.user_name
+    mail=user.email
+    fullname=user.full_name
+    isdocter=user.is_doctor
+    img=user.img
+    url=csp+"/mediafiles/"+str(img)
+    user={'username':username,'mail':mail,'fullname':fullname,'isdoctor':isdocter,'img':img}
+    return render(request, 'profile.html',{'user':user})
+
 def login_cam():
     print("test")
     face_id = faceRecognition.recognizeFace()
-    print(face_id)
+    print(type(face_id))
+    return face_id
 
 def index(request):
     return render(request, 'index.html', {})
@@ -51,7 +72,10 @@ def login_sign(request):
                 user = authenticate(request, username=username, password=password)
                 if user is not None:
                     login(request, user)
-                    return redirect('authentification/')
+                    user=NewUser.objects.filter(user_name=user).first()
+              
+
+                    return redirect('authentification/'+str(user.id))
                    
               
                    
@@ -68,10 +92,12 @@ def addFace(face_id):
     print("train")
     return redirect('/')
 
-def authentification(request):
+
+
+def authentification(request,id):
     if request.method == 'POST': 
         login_cam()
-        return render(request, 'index.html', {})        
+        return redirect('profile/'+str(id))       
 
     return render(request, 'authentification.html', {})        
 
